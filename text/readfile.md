@@ -95,3 +95,42 @@ console.log('Read file asinc example');
 
 ## Работа с несколькими фалами
 Допустим, мы хотим узнать информацию о нескольких файлах.
+Рассмотрим код:
+
+```javascript
+'use strict';
+
+const fs = require('fs');
+
+// массив фалов, из которых хотим узнать информацию
+// это может быть массив, объкт или что ли бибо по чему можно итерироваться
+const files = ['code/1/1_example.js', 'code/1/2_example.js', 'code/1/3_example.js'];
+
+// Заготовить структуру данных, куда будет записан результат
+const status = new Array(files.length);
+
+// Узнаем длинну массива
+const maxIndex = files.length - 1;
+
+// Функция для обработки переменной status
+const printResult = () => {
+    console.dir({ status });
+};
+
+// Проходим по элементам массива
+// Имя файла попадает в file, порядковый номер приходит в i
+// i нужен для того что бы в массив status данные записать по тому же индексу.
+// Это связанно с асинхронностью, поскольку мы не знаем в каком порядке нам будут возвращены данные
+files.forEach((file, i) => {
+    console.dir({ file, i });
+    // lstat Возвращает: <Promise> Выполняет с <fs.Stats> объекта для символической ссылки path.
+    fs.lstat(file, (err, stat) => {
+        if (err) {
+            console.log(`File ${file} not found`);
+        } else {
+            status[i] = stat;
+        }
+        if (i === maxIndex) printResult();
+    });
+});
+```
